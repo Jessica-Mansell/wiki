@@ -17,7 +17,7 @@ def index(request):
         "entries": util.list_entries()
     })
 
-def link_page(request):
+def link_page(request, title):
     return render(request, "encyclopedia/info_page.html", {
         "title" : title
     })
