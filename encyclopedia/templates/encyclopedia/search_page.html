@@ -1,0 +1,20 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    Search Results
+{% endblock %}
+
+{% block body %}
+{% if is_substring_of_queries %}
+        <h1>Search Results</h1>
+            {% for query in is_substring_of_queries%}
+                <li><a href="{% url 'wiki' query %}"> {{ query }} </a></li>
+                {% endfor %}
+            {% else %}
+
+        <h1>There's nothing here!</h1>
+        {% endif %}
+
+{% endblock %}
+
+

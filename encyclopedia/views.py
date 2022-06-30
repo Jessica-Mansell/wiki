@@ -58,7 +58,7 @@ class SearchForm(forms.Form):
             "substring_match": substring_match
         }
 
-        response = render(request, "encyclopedia/search.html", context)
+        response = render(request, "encyclopedia/search_page.html", context)
         return response
 
 
