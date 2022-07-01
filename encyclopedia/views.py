@@ -62,4 +62,22 @@ def search(request):
     response = render(request, "encyclopedia/search_page.html", context)
     return response
 
-
+# setup for editing entries with textarea
+class EntryForm(forms.Form):
+    content = forms.CharField(required = True, widget = forms.Textarea, label = "Text")
+# calling the request for HttpResponse and title to activate
+def edit_entry(request, title):
+    if request.method == 'POST':
+        # saves the entry over the old md file
+        util.save_entry(title, request.POST['content'])
+        # redirect to newly saved page
+        return HttpResponseRedirect(reverse('entry', args=(title,)))
+    else:
+        # show the original content
+        content = util.get_entry(title)
+        form = EntryForm(request.POST or None, original={'content': content})
+        return render(request, "encyclopedia/edit_page.html", {
+            "title": title,
+            "content": content,
+            "form": form
+        })
