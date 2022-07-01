@@ -92,7 +92,7 @@ class New_Page(forms.Form):
 def new_entry(request, title):
     # request method should be post as this will add data
     if request.method == 'POST':
-        print(request.POST.get('page'))
+        print(request.POST('page'))
         form = New_Page(request.POST)
         # check if required entered data is valid
         if form.is_valid():
@@ -108,7 +108,7 @@ def new_entry(request, title):
             else:
                 page = form.cleaned_data["page"]
                 print(page)
-                util.save_entry(title, page)
+                util.save_entry(title)
                 return redirect("page", title = title)
         else:
             return render(request, "encyclopedia/new_page.html", {
