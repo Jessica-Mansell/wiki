@@ -123,5 +123,6 @@ def new_entry(request, title):
 
 def random_entry(request):
     entries = util.list_entries()
-    random_page = random.choice(entries)
-    return HttpResponseRedirect(reverse('wiki', args=[random_page]))
+    random_page = random.choice[entries]
+    return HttpResponseRedirect(reverse("encyclopedia/info_page.html", args=[random_page]))
+
