@@ -12,18 +12,18 @@
         <div class="row">
             <div class="sidebar col-lg-2 col-md-3">
                 <h2>Wiki</h2>
-                <form action="{% url 'search_query' %}" method="get">
+                <form action="{% url 'encyclopedia:search_query' %}" method="get">
                     {{ form }}                
                     <input type="submit">
                 </form>
                 <div>
-                    <a href="{% url 'index' %}">Home</a>
+                    <a href="{% url 'encyclopedia:index' %}">Home</a>
                 </div>
                 <div>
-                    <a href="{% url 'new' %}">Create New Page</a>
+                    <a href="{% url 'encyclopedia:new' %}">Create New Page</a>
                 </div>
                 <div>
-                    <a href="{% url 'random' %}">Random Page</a>
+                    <a href="{% url 'encyclopedia:random' %}">Random Page</a>
                 </div>
                 {% block nav %}
                 {% endblock %}

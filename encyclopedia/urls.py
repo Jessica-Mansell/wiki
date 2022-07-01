@@ -5,7 +5,7 @@ import wiki
 
 from . import views
 
-#app_name = "encyclopedia"
+app_name = "encyclopedia"
 
 urlpatterns = [
     path('', views.index, name="index"),
