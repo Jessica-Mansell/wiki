@@ -9,6 +9,7 @@ from django import forms
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
+import markdown
 import markdown2
 
 from markdown2 import Markdown
@@ -25,10 +26,12 @@ def index(request):
         "form": SearchForm()
     })
 
+
 def link_page(request, title):
     return render(request, "encyclopedia/info_page.html", {
         "title" : title
     })
+
 
 class SearchForm(forms.Form):
     query = forms.CharField(label='New Search', max_length=50)
@@ -56,19 +59,19 @@ def search(request):
                 # shows list of possible matches
                 elif substring_match:
                     substring_match.append(entry("entries"))
-
     context = {
         "form": SearchForm(),
         "substring_match": substring_match
     }
-
     response = render(request, "encyclopedia/search_page.html", context)
     return response
+
 
 # setup for editing entries with textarea
 class EntryForm(forms.Form):
     content = forms.CharField(required = True, widget = forms.Textarea, label = "Edit Page Text")
 # calling the request for HttpResponse and title to activate
+
 def edit_entry(request, title):
     if request.method == 'POST':
         # saves the entry over the old md file, also paying attention to utf8 decode
@@ -84,12 +87,14 @@ def edit_entry(request, title):
             "content": content,
             "form": form
         })
+        
 
 # setup for new page creation
 class New_Page(forms.Form):
     title = forms.CharField(required = True, widget=forms.Textarea, label = "New Title")
     content = forms.CharField(required = True, widget = forms.TextInput, label = "New Entry Text")
 # function to start a new page with save_entry util
+
 def new_entry(request, title):
     # request method should be post as this will add data
     if request.method == 'POST':
@@ -121,8 +126,12 @@ def new_entry(request, title):
         "exists": False
     })
 
+
 def random_entry(request):
     entries = util.list_entries()
     random_page = random.choice[entries]
     return HttpResponseRedirect(reverse("encyclopedia/info_page.html", args=[random_page]))
 
+
+#def convert_page():
+    #Markdown.convert(entries)
