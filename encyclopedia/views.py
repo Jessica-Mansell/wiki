@@ -18,7 +18,8 @@ from . import util
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
-        "entries": util.list_entries()
+        "entries": util.list_entries(),
+        "form": SearchForm()
     })
 
 def link_page(request, title):
@@ -27,7 +28,7 @@ def link_page(request, title):
     })
 
 class SearchForm(forms.Form):
-    query = forms.CharField(label='New Query', max_length=50)
+    query = forms.CharField(label='New Search', max_length=50)
 
     def search(request):
         # populate the form

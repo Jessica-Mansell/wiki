@@ -5,9 +5,9 @@
 {% endblock %}
 
 {% block body %}
-{% if is_substring_of_queries %}
+{% if substring_match %}
         <h1>Search Results</h1>
-            {% for query in is_substring_of_queries%}
+            {% for query in substring_match %}
                 <li><a href="{% url 'wiki' query %}"> {{ query }} </a></li>
                 {% endfor %}
             {% else %}
