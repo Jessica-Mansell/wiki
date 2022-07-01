@@ -1,6 +1,7 @@
 from fileinput import filename
 from genericpath import exists
 from multiprocessing import context
+import random
 import re
 from turtle import title
 from urllib import response
@@ -120,3 +121,7 @@ def new_entry(request, title):
         "exists": False
     })
 
+def random_entry(request):
+    entries = util.list_entries()
+    random_page = random.choice(entries)
+    return HttpResponseRedirect(reverse('wiki', args=[random_page]))
