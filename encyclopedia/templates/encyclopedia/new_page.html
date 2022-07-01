@@ -6,11 +6,11 @@
 
 {% block body %}
   <h2>New Page</h2>
-  <form class="entry-form" action="{% url 'new_page' %}" method="post">
+  <form class="entry-form" action="{% url 'new' %}" method="post">
     {% csrf_token %}
     {{ form }}
     {% if exists %}
-      <p class="alert alert-danger">Page '{{ title }}' already exists.</p>
+      <p class="alert alert-danger">Page {{ title }} already exists.</p>
     {% endif %}
     <input type="submit" class="button">
   </form>

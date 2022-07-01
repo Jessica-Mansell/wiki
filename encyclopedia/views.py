@@ -54,7 +54,7 @@ def search(request):
                     kwargs={"title": entry}))
                 # shows list of possible matches
                 elif substring_match:
-                    substring_match.append(entry)
+                    substring_match.append(entry("entries"))
 
     context = {
         "form": SearchForm(),
@@ -86,16 +86,19 @@ def edit_entry(request, title):
 
 # setup for new page creation
 class New_Page(forms.Form):
-    title = forms.CharField(required = True, widget=forms.Textarea, Label = "New Title")
-    content = forms.CharField(required = True, widget = forms.TextInput, Label = "New Entry Text")
+    title = forms.CharField(required = True, widget=forms.Textarea, label = "New Title")
+    content = forms.CharField(required = True, widget = forms.TextInput, label = "New Entry Text")
 # function to start a new page with save_entry util
-def new_entry(request, title, content):
+def new_entry(request, title):
     # request method should be post as this will add data
     if request.method == 'POST':
         print(request.POST.get('page'))
         form = New_Page(request.POST)
+        # check if required entered data is valid
         if form.is_valid():
+            # strips down title to compare against existing titles
             title = form.cleaned_data["title"].strip()
+            # opens empty page to await new entry
             if util.get_entry(title):
                 return render(request, "encyclopedia/new_page.html", {
                     "form": form,
