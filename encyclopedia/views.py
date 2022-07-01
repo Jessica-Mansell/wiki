@@ -1,10 +1,12 @@
 from fileinput import filename
+from genericpath import exists
 from multiprocessing import context
+import re
 from turtle import title
 from urllib import response
 from django import forms
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 import markdown2
 
@@ -64,20 +66,54 @@ def search(request):
 
 # setup for editing entries with textarea
 class EntryForm(forms.Form):
-    content = forms.CharField(required = True, widget = forms.Textarea, label = "Text")
+    content = forms.CharField(required = True, widget = forms.Textarea, label = "Edit Page Text")
 # calling the request for HttpResponse and title to activate
 def edit_entry(request, title):
     if request.method == 'POST':
-        # saves the entry over the old md file
-        util.save_entry(title, request.POST['content'])
+        # saves the entry over the old md file, also paying attention to utf8 decode
+        util.save_entry(title, bytes(request.POST.get['content'], 'utf8'))
         # redirect to newly saved page
         return HttpResponseRedirect(reverse('entry', args=(title,)))
     else:
-        # show the original content
+        # show the original content, get since there is nothing being written to db
         content = util.get_entry(title)
-        form = EntryForm(request.POST or None, original={'content': content})
+        form = EntryForm(request.GET or None, original={'content': content})
         return render(request, "encyclopedia/edit_page.html", {
             "title": title,
             "content": content,
             "form": form
         })
+
+# setup for new page creation
+class New_Page(forms.Form):
+    title = forms.CharField(required = True, widget=forms.Textarea, Label = "New Title")
+    content = forms.CharField(required = True, widget = forms.TextInput, Label = "New Entry Text")
+# function to start a new page with save_entry util
+def new_entry(request, title, content):
+    # request method should be post as this will add data
+    if request.method == 'POST':
+        print(request.POST.get('page'))
+        form = New_Page(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data["title"].strip()
+            if util.get_entry(title):
+                return render(request, "encyclopedia/new_page.html", {
+                    "form": form,
+                    "exists": True,
+                    "title": title
+                })
+            else:
+                page = form.cleaned_data["page"]
+                print(page)
+                util.save_entry(title, page)
+                return redirect("page", title = title)
+        else:
+            return render(request, "encyclopedia/new_page.html", {
+                "form": form,
+                "exists": False
+            })
+    return render(request, "encyclopedia/new_page.html", {
+        "form": New_Page(),
+        "exists": False
+    })
+
