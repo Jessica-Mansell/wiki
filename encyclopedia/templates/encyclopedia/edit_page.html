@@ -5,12 +5,12 @@
 {% endblock %}
 
 {% block body %}
-    <h1> Edit {{ title }}</h1>
+    <h1> Edit {{ title }} Entry</h1>
 
     <form action="{% url 'encyclopedia:edit' title %}" method="post">
         {% csrf_token %}
         {{  form  }}
-        <input type="button" value="Save">
+        <input type="submit" value="Save">
     </form>
 
 

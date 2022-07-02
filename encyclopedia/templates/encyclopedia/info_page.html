@@ -5,7 +5,9 @@
 {% endblock %}
 
 {% block body %}
-{% load markdownify %}
-{{ markdowntext|markdownify }}
+    {{ content | safe }}
 
+<div>
+    <a href="{% url 'encyclopedia:edit' title %}">Edit Page</a>
+</div>
 {% endblock %}

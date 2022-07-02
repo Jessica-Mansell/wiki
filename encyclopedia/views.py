@@ -7,11 +7,9 @@ from django import forms
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from markdown import markdown
 
-from markdown2 import Markdown
+import markdown2
 
-markdowner = Markdown()
 
 from . import util
 
@@ -24,7 +22,8 @@ def index(request):
 
 def link_page(request, title):
     return render(request, "encyclopedia/info_page.html", {
-        "title" : title
+        "title" : title,
+        "content": markdown2.markdown(util.get_entry(title))
     })
 
 
@@ -71,13 +70,14 @@ class EntryForm(forms.Form):
 def edit_entry(request, title):
     if request.method == 'POST':
         # saves the entry over the old md file, also paying attention to utf8 decode
-        util.save_entry(title, bytes(request.POST.get['content'], 'utf8'))
+        util.save_entry(title, bytes(request.POST['content'], 'utf8'))
         # redirect to newly saved page
-        return HttpResponseRedirect(reverse('entry', args=(title,)))
+        return link_page(request, title)
     else:
         # show the original content, get since there is nothing being written to db
+        title = title
         content = util.get_entry(title)
-        form = EntryForm(request.GET or None, original={'content': content})
+        form = EntryForm(request.GET or None, initial={'content': content})
         return render(request, "encyclopedia/edit_page.html", {
             "title": title,
             "content": content,
@@ -94,12 +94,12 @@ class New_Page(forms.Form):
 def new_entry(request):
     # request method should be post as this will add data
     if request.method == 'POST':
-        print(request.POST('page'))
         form = New_Page(request.POST)
         # check if required entered data is valid
         if form.is_valid():
             # strips down title to compare against existing titles
             title = form.cleaned_data["title"].strip()
+            content = form.cleaned_data["content"]
             # opens empty page to await new entry
             if util.get_entry(title):
                 return render(request, "encyclopedia/new_page.html", {
@@ -108,9 +108,9 @@ def new_entry(request):
                     "title": title
                 })
             else:
-                form = form.cleaned_data["page"]
-                util.save_entry(title)
-                return redirect("page", title = title)
+                form = form.cleaned_data["title"]
+                util.save_entry(title, content)
+                return link_page(request, title)
         else:
             return render(request, "encyclopedia/new_page.html", {
                 "form": form,
@@ -123,16 +123,7 @@ def new_entry(request):
 
 
 def random_entry(request):
-    random_page = random.choice(util.list_entries())
-    return random_page
+    select_entry = util.list_entries()
+    random_page = random.choice(select_entry)
+    return redirect('encyclopedia:entries', title=random_page)
 
-class Markdown(TemplateView):
-    template_name = 'info_page.html'
-
-    def get_context_data(self, **kwargs):
-        markdowntext = open(util.get_entry).read()
-        print(markdowntext)
-        context = super().get_context_data(**kwargs)
-        context['markdowntext'] = markdowntext
-
-        return context
