@@ -2,19 +2,14 @@ from fileinput import filename
 from genericpath import exists
 from multiprocessing import context
 import random
-import re
-from turtle import title
-from urllib import response
+from django.views.generic.base import TemplateView
 from django import forms
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
-import markdown
-import markdown2
+from markdown import markdown
 
 from markdown2 import Markdown
-
-import encyclopedia
 
 markdowner = Markdown()
 
@@ -40,7 +35,7 @@ def search(request):
     # populate the form
     form = SearchForm()
     # prepare for substring search with empty list for possible matches
-    queries_list = []
+    matches = []
     # check for GET request method and run request
     if request.method == "GET":
         form = SearchForm(request.GET)
@@ -54,14 +49,15 @@ def search(request):
                 substring_match = form.cleaned_data["query"].casefold() in entry.casefold()
                 # query match shows user the matching page
                 if match_same:
-                    return HttpResponseRedirect(reverse("entries",
+                    return HttpResponseRedirect(reverse("encyclopedia:entries",
                     kwargs={"title": entry}))
                 # shows list of possible matches
                 elif substring_match:
-                    substring_match.append(entry("entries"))
+                    matches.append(entry)
+                    print(entry)
     context = {
         "form": SearchForm(),
-        "substring_match": substring_match
+        "substring_match": matches
     }
     response = render(request, "encyclopedia/search_page.html", context)
     return response
@@ -91,11 +87,11 @@ def edit_entry(request, title):
 
 # setup for new page creation
 class New_Page(forms.Form):
-    title = forms.CharField(required = True, widget=forms.Textarea, label = "New Title")
-    content = forms.CharField(required = True, widget = forms.TextInput, label = "New Entry Text")
+    title = forms.CharField(required = True, widget=forms.TextInput, label = "New Title")
+    content = forms.CharField(required = True, widget = forms.Textarea, label = "New Entry Text")
 # function to start a new page with save_entry util
 
-def new_entry(request, title):
+def new_entry(request):
     # request method should be post as this will add data
     if request.method == 'POST':
         print(request.POST('page'))
@@ -112,8 +108,7 @@ def new_entry(request, title):
                     "title": title
                 })
             else:
-                page = form.cleaned_data["page"]
-                print(page)
+                form = form.cleaned_data["page"]
                 util.save_entry(title)
                 return redirect("page", title = title)
         else:
@@ -128,10 +123,16 @@ def new_entry(request, title):
 
 
 def random_entry(request):
-    entries = util.list_entries()
-    random_page = random.choice[entries]
-    return HttpResponseRedirect(reverse("encyclopedia/info_page.html", args=[random_page]))
+    random_page = random.choice(util.list_entries())
+    return random_page
 
+class Markdown(TemplateView):
+    template_name = 'info_page.html'
 
-#def convert_page():
-    #Markdown.convert(entries)
+    def get_context_data(self, **kwargs):
+        markdowntext = open(util.get_entry).read()
+        print(markdowntext)
+        context = super().get_context_data(**kwargs)
+        context['markdowntext'] = markdowntext
+
+        return context

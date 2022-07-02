@@ -13,5 +13,5 @@ urlpatterns = [
     path("search_page/", views.search, name="search_query"),
     path("edit_page/", views.edit_entry, name="edit"),
     path("new_page/", views.new_entry, name="new"),
-    path("random/", views.index, name="random")
+    path("random/", views.random_entry, name="random")
 ]

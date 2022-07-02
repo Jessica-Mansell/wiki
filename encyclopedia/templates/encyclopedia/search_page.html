@@ -8,7 +8,7 @@
 {% if substring_match %}
         <h1>Search Results</h1>
             {% for query in substring_match %}
-                <li><a href="{% url 'wiki' query %}"> {{ query }} </a></li>
+                <li><a href="{% url 'encyclopedia:search_query' %}"> {{ query }} </a></li>
                 {% endfor %}
             {% else %}
 
