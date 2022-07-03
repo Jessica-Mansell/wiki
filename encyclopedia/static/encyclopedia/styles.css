@@ -1,6 +1,7 @@
 body {
     margin: 0;
     background-color: white;
+    font-family: 'Quicksand', sans-serif, !important;
 }
 
 code {
@@ -10,29 +11,35 @@ code {
 h1 {
     margin-top: 0px;
     padding-top: 20px;
+    font-family: 'Quicksand', sans-serif, !important;
 }
 
 textarea {
     height: 90vh;
     width: 80%;
+    font-family: 'Quicksand', sans-serif, !important;
 }
 
 .main {
     padding: 10px;
+    font-family: 'Quicksand', sans-serif, !important;
 }
 
 .search {
     width: 100%;
     font-size: 15px;
     line-height: 15px;
+    font-family: 'Quicksand', sans-serif, !important;
 }
 
 .sidebar {
-    background-color: #f0f0f0;
+    background-color: #d19ce6;
     height: 100vh;
     padding: 20px;
+    font-family: 'Quicksand', sans-serif, !important;
 }
 
 .sidebar h2 {
     margin-top: 5px;
+    font-family: 'Quicksand', sans-serif, !important;
 }
