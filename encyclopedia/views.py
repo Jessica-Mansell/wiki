@@ -13,6 +13,7 @@ import markdown2
 
 from . import util
 
+
 def index(request):
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries(),
@@ -22,13 +23,14 @@ def index(request):
 
 def link_page(request, title):
     return render(request, "encyclopedia/info_page.html", {
-        "title" : title,
+        "title": title,
         "content": markdown2.markdown(util.get_entry(title))
     })
 
 
 class SearchForm(forms.Form):
     query = forms.CharField(label='New Search', max_length=50)
+
 
 def search(request):
     # populate the form
@@ -42,14 +44,18 @@ def search(request):
         if form.is_valid():
             # loop through list of entries
             for entry in util.list_entries():
-                # put query through a cleaned_data, returns as string and makes all lowercase
-                match_same = form.cleaned_data["query"].casefold() == entry.casefold()
-                # if substring query matches anything, clean entry as well
-                substring_match = form.cleaned_data["query"].casefold() in entry.casefold()
+                # put query through a cleaned_data,
+                # returns as string and makes all lowercase
+                match_same = \
+                    form.cleaned_data["query"].casefold() == entry.casefold()
+                # if substring query matches anything,
+                # clean entry as well
+                substring_match = \
+                    form.cleaned_data["query"].casefold() in entry.casefold()
                 # query match shows user the matching page
                 if match_same:
                     return HttpResponseRedirect(reverse("encyclopedia:entries",
-                    kwargs={"title": entry}))
+                                                kwargs={"title": entry}))
                 # shows list of possible matches
                 elif substring_match:
                     matches.append(entry)
@@ -64,17 +70,19 @@ def search(request):
 
 # setup for editing entries with textarea
 class EntryForm(forms.Form):
-    content = forms.CharField(required = True, widget = forms.Textarea, label = "Edit Page Text")
+    content = forms.CharField(
+        required=True, widget=forms.Textarea, label="Edit Page Text")
 # calling the request for HttpResponse and title to activate
+
 
 def edit_entry(request, title):
     if request.method == 'POST':
-        # saves the entry over the old md file, also paying attention to utf8 decode
+        # saves the entry over the old md file
         util.save_entry(title, bytes(request.POST['content'], 'utf8'))
         # redirect to newly saved page
         return link_page(request, title)
     else:
-        # show the original content, get since there is nothing being written to db
+        # show the original content
         title = title
         content = util.get_entry(title)
         form = EntryForm(request.GET or None, initial={'content': content})
@@ -83,13 +91,16 @@ def edit_entry(request, title):
             "content": content,
             "form": form
         })
-        
+
 
 # setup for new page creation
 class New_Page(forms.Form):
-    title = forms.CharField(required = True, widget=forms.TextInput, label = "New Title")
-    content = forms.CharField(required = True, widget = forms.Textarea, label = "New Entry Text")
+    title = forms.CharField(
+        required=True, widget=forms.TextInput, label="New Title")
+    content = forms.CharField(
+        required=True, widget=forms.Textarea, label="New Entry Text")
 # function to start a new page with save_entry util
+
 
 def new_entry(request):
     # request method should be post as this will add data
@@ -126,4 +137,3 @@ def random_entry(request):
     select_entry = util.list_entries()
     random_page = random.choice(select_entry)
     return redirect('encyclopedia:entries', title=random_page)
-
